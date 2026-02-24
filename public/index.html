@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prize Pool Website</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 80%; }
+    th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+    th { background-color: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Prize Pools</h1>
+  <table id="poolsTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Ticket Price</th>
+        <th>Ticket Cap</th>
+        <th>Tickets Sold</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadPools() {
+      try {
+        const res = await fetch('/api/pools');
+        const data = await res.json();
+        const tbody = document.querySelector('#poolsTable tbody');
+        tbody.innerHTML = '';
+
+        data.pools.forEach(pool => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${pool.title}</td>
+            <td>£${pool.ticketPrice.toFixed(2)}</td>
+            <td>${pool.ticketCap}</td>
+            <td>${pool.ticketsSold}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load pools');
+      }
+    }
+
+    loadPools();
+  </script>
+</body>
+</html>
