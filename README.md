@@ -41,17 +41,17 @@ This project is being developed to demonstrate junior-level full-stack skills us
 
 ## 📂 Project Structure
 
-Prize Pool Website/
+Prize Pool Website
 ├─ src/
-│  ├─ index.js
-│  └─ routes/
-│     └─ pools.js
+│ ├─ index.js # Express server entry point
+│ └─ routes/
+│ └─ pools.js # Prize pool API routes
 ├─ public/
-│  └─ index.html
+│ └─ index.html # Frontend UI
 ├─ prisma/
-│  ├─ schema.prisma
-│  └─ migrations/
-├─ .env
+│ ├─ schema.prisma # Database schema
+│ └─ migrations/ # Prisma migrations
+├─ .env # Environment variables (not committed)
 ├─ package.json
 └─ README.md
 
