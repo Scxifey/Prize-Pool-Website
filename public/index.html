@@ -2,50 +2,611 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Prize Pool Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prize Pool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { border-collapse: collapse; width: 80%; }
-    th, td { border: 1px solid #333; padding: 8px; text-align: center; }
-    th { background-color: #eee; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c518;
+      --gold-dim: #c9a012;
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c27;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #7070a0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background grain effect */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 60px 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #1a1508 0%, transparent 100%);
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 1px;
+      background: var(--gold);
+      box-shadow: 0 0 20px var(--gold);
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(3rem, 8vw, 6rem);
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(245, 197, 24, 0.4), 0 0 80px rgba(245, 197, 24, 0.1);
+      line-height: 1;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    /* Main layout */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 20px;
+    }
+
+    /* Section titles */
+    .section-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* Pools grid */
+    #poolsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .pool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .pool-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold-dim);
+      box-shadow: 0 8px 40px rgba(245, 197, 24, 0.08);
+    }
+
+    .pool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .pool-card:hover::before { opacity: 1; }
+
+    .pool-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.6rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .pool-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .stat-value.gold { color: var(--gold); }
+
+    /* Progress bar */
+    .progress-wrap {
+      margin-bottom: 20px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+      box-shadow: 0 0 8px rgba(245, 197, 24, 0.4);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #0a0a0f;
+    }
+
+    .btn-gold:hover {
+      background: #ffd700;
+      box-shadow: 0 4px 20px rgba(245, 197, 24, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    /* Forms */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 40px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.08);
+    }
+
+    input::placeholder { color: var(--muted); }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 22px;
+      font-size: 0.9rem;
+      z-index: 999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      max-width: 320px;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    #toast.success { border-color: var(--gold); color: var(--gold); }
+    #toast.error { border-color: #e05252; color: #e05252; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px;
+      width: 100%;
+      max-width: 440px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .modal-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      margin-top: -4px;
+    }
+
+    /* Winner banner */
+    #winnerBanner {
+      display: none;
+      background: linear-gradient(135deg, #1a1508, #2a2000);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      margin-bottom: 40px;
+      box-shadow: 0 0 40px rgba(245, 197, 24, 0.1);
+    }
+
+    #winnerBanner .trophy { font-size: 2.5rem; margin-bottom: 8px; }
+    #winnerBanner h3 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+    }
+    #winnerBanner p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 <body>
-  <h1>Prize Pools</h1>
-  <table id="poolsTable">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Ticket Price</th>
-        <th>Ticket Cap</th>
-        <th>Tickets Sold</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+
+  <header>
+    <div class="logo">Prize Pool</div>
+    <div class="tagline">Buy a ticket. Win big.</div>
+  </header>
+
+  <main>
+
+    <!-- Winner Banner -->
+    <div id="winnerBanner">
+      <div class="trophy">🏆</div>
+      <h3 id="winnerName">Winner!</h3>
+      <p id="winnerEmail"></p>
+    </div>
+
+    <!-- Active Pools -->
+    <div class="section-title">Active Pools</div>
+    <div id="poolsGrid"><div class="empty-state">Loading pools...</div></div>
+
+    <!-- Create Pool -->
+    <div class="section-title">Create a Pool</div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Pool Title</label>
+          <input type="text" id="newTitle" placeholder="e.g. PS5 Giveaway">
+        </div>
+        <div class="form-group">
+          <label>Ticket Price (£)</label>
+          <input type="number" id="newPrice" placeholder="5.00" min="0.01" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Ticket Cap</label>
+          <input type="number" id="newCap" placeholder="100" min="1">
+        </div>
+      </div>
+      <button class="btn btn-gold" onclick="createPool()">＋ Create Pool</button>
+    </div>
+
+  </main>
+
+  <!-- Buy Ticket Modal -->
+  <div class="modal-overlay" id="buyModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title">Buy a Ticket</div>
+      <input type="hidden" id="buyPoolId">
+      <div class="form-group" style="margin-bottom:16px">
+        <label>Your Name</label>
+        <input type="text" id="buyName" placeholder="John Doe">
+      </div>
+      <div class="form-group" style="margin-bottom:24px">
+        <label>Your Email</label>
+        <input type="email" id="buyEmail" placeholder="john@example.com">
+      </div>
+      <button class="btn btn-gold" onclick="buyTicket()">🎟 Purchase Ticket</button>
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
 
   <script>
+    // Load all pools on page load
     async function loadPools() {
       try {
         const res = await fetch('/api/pools');
         const data = await res.json();
-        const tbody = document.querySelector('#poolsTable tbody');
-        tbody.innerHTML = '';
+        const grid = document.getElementById('poolsGrid');
 
-        data.pools.forEach(pool => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${pool.title}</td>
-            <td>£${pool.ticketPrice.toFixed(2)}</td>
-            <td>${pool.ticketCap}</td>
-            <td>${pool.ticketsSold}</td>
+        if (data.pools.length === 0) {
+          grid.innerHTML = '<div class="empty-state">No pools yet — create one below!</div>';
+          return;
+        }
+
+        grid.innerHTML = '';
+        data.pools.forEach((pool, i) => {
+          const pct = pool.ticketCap > 0 ? Math.round((pool.ticketsSold / pool.ticketCap) * 100) : 0;
+          const card = document.createElement('div');
+          card.className = 'pool-card';
+          card.style.animationDelay = `${i * 0.08}s`;
+          card.innerHTML = `
+            <div class="pool-title">${pool.title}</div>
+            <div class="pool-stats">
+              <div class="stat">
+                <div class="stat-label">Ticket Price</div>
+                <div class="stat-value gold">£${pool.ticketPrice.toFixed(2)}</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">Tickets Left</div>
+                <div class="stat-value">${pool.ticketCap - pool.ticketsSold}</div>
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label">
+                <span>${pool.ticketsSold} sold</span>
+                <span>${pct}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:${pct}%"></div>
+              </div>
+            </div>
+            <button class="btn btn-gold" onclick="openBuyModal(${pool.id})">🎟 Buy Ticket</button>
+            <button class="btn btn-outline" onclick="pickWinner(${pool.id})">🏆 Pick Winner</button>
           `;
-          tbody.appendChild(tr);
+          grid.appendChild(card);
         });
       } catch (err) {
-        console.error(err);
-        alert('Failed to load pools');
+        document.getElementById('poolsGrid').innerHTML = '<div class="empty-state">Failed to load pools.</div>';
       }
+    }
+
+    // Create a new pool
+    async function createPool() {
+      const title = document.getElementById('newTitle').value.trim();
+      const ticketPrice = parseFloat(document.getElementById('newPrice').value);
+      const ticketCap = parseInt(document.getElementById('newCap').value);
+
+      if (!title || isNaN(ticketPrice) || isNaN(ticketCap)) {
+        showToast('Please fill in all fields!', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/pools', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, ticketPrice, ticketCap })
+        });
+        const data = await res.json();
+        showToast(`"${data.pool.title}" created!`, 'success');
+        document.getElementById('newTitle').value = '';
+        document.getElementById('newPrice').value = '';
+        document.getElementById('newCap').value = '';
+        loadPools();
+      } catch (err) {
+        showToast('Failed to create pool.', 'error');
+      }
+    }
+
+    // Open buy modal
+    function openBuyModal(poolId) {
+      document.getElementById('buyPoolId').value = poolId;
+      document.getElementById('buyName').value = '';
+      document.getElementById('buyEmail').value = '';
+      document.getElementById('buyModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('buyModal').classList.remove('open');
+    }
+
+    // Buy a ticket
+    async function buyTicket() {
+      const poolId = document.getElementById('buyPoolId').value;
+      const name = document.getElementById('buyName').value.trim();
+      const email = document.getElementById('buyEmail').value.trim();
+
+      if (!name || !email) {
+        showToast('Please enter your name and email!', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/pools/${poolId}/buy`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error, 'error'); return; }
+        closeModal();
+        showToast('Ticket purchased! Good luck! 🎟', 'success');
+        loadPools();
+      } catch (err) {
+        showToast('Failed to purchase ticket.', 'error');
+      }
+    }
+
+    // Pick a winner
+    async function pickWinner(poolId) {
+      try {
+        const res = await fetch(`/api/pools/${poolId}/winner`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error, 'error'); return; }
+
+        const banner = document.getElementById('winnerBanner');
+        document.getElementById('winnerName').textContent = `🏆 ${data.winner.name} wins!`;
+        document.getElementById('winnerEmail').textContent = data.winner.email;
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth' });
+        showToast(`Winner: ${data.winner.name}!`, 'success');
+      } catch (err) {
+        showToast('Failed to pick winner.', 'error');
+      }
+    }
+
+    // Toast notification
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `show ${type}`;
+      setTimeout(() => { toast.className = ''; }, 3500);
     }
 
     loadPools();
