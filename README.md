@@ -1,135 +1,127 @@
-# Prize Pool Website 🎟️
+# 🏆 Prize Pool Website
 
-A full-stack web application built as a learning and portfolio project.
-The application displays prize pools, stores them in a database, and serves them through a backend API with a simple frontend.
-
-This project is being developed to demonstrate junior-level full-stack skills using modern web technologies.
+A full-stack web application where users can buy tickets for a chance to win prizes. Built with Node.js, Express, PostgreSQL and Prisma.
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-- Backend API built with Node.js and Express
-- Database integration using PostgreSQL and Prisma ORM
-- REST API endpoint to fetch prize pools
-- Simple frontend (HTML + JavaScript) that displays live data from the backend
-- Clean project structure following real-world practices
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-- Node.js
-- Express.js
-
-### Database
-- PostgreSQL
-- Prisma ORM
-
-### Frontend
-- HTML
-- Vanilla JavaScript
-- CSS
-
-### Tools
-- Git
-- GitHub
-- VS Code
+- 🎟 **Buy Tickets** — Customers can enter their name and email to purchase a ticket for any active pool
+- 📧 **Email Confirmations** — Automatic confirmation emails sent to customers on ticket purchase
+- 🏆 **Winner Selection** — Randomly picks a winner from all ticket holders and notifies them by email
+- ➕ **Create Pools** — Add new prize pools with a custom title, ticket price and ticket cap
+- 📊 **Live Progress** — Each pool displays a progress bar showing how many tickets have been sold
+- 💾 **Persistent Storage** — All data stored in a real PostgreSQL database
 
 ---
 
-## 📂 Project Structure
+## 🛠 Tech Stack
 
-Prize Pool Website
-├─ src/
-│ ├─ index.js # Express server entry point
-│ └─ routes/
-│ └─ pools.js # Prize pool API routes
-├─ public/
-│ └─ index.html # Frontend UI
-├─ prisma/
-│ ├─ schema.prisma # Database schema
-│ └─ migrations/ # Prisma migrations
-├─ .env # Environment variables (not committed)
-├─ package.json
-└─ README.md
+| Layer | Technology |
+|---|---|
+| Frontend | HTML, CSS, JavaScript |
+| Backend | Node.js, Express |
+| Database | PostgreSQL, Prisma ORM |
+| Emails | Nodemailer, Gmail |
 
 ---
 
-## ⚙️ Setup & Installation
+## 📁 Project Structure
 
-### 1. Clone the repository
-
-git clone <your-repo-url>
-cd prize-pool-website
-
-### 2. Install dependencies
-
-npm install
-
-### 3. Configure environment variables
-
-Create a .env file in the project root:
-
-DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/prizepool"
-
----
-
-### 4. Run database migrations
-
-npx prisma migrate dev
-
-(Optional)
-npx prisma studio
+```
+Prize Pool Website/
+├── prisma/
+│   ├── schema.prisma        # Database schema (Pool, User, Ticket)
+│   └── migrations/          # Database migration history
+├── public/
+│   └── index.html           # Frontend UI
+├── src/
+│   ├── index.js             # Main server entry point
+│   └── routes/
+│       └── pools.js         # API routes for pools, tickets and winners
+├── .env                     # Environment variables (not included in repo)
+├── .gitignore
+└── package.json
+```
 
 ---
 
-### 5. Start the server
+## 🚀 Getting Started
 
-node src/index.js
+### Prerequisites
+- [Node.js](https://nodejs.org/)
+- [PostgreSQL](https://www.postgresql.org/)
 
-Visit:
-- Frontend: http://localhost:3000
-- API: http://localhost:3000/api/pools
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Scxifey/Prize-Pool-Website.git
+   cd Prize-Pool-Website
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up your environment variables**
+
+   Create a `.env` file in the root of the project:
+   ```
+   DATABASE_URL="postgresql://youruser:yourpassword@localhost:5432/yourdbname"
+   EMAIL_USER=yourgmail@gmail.com
+   EMAIL_PASS=your16characterapppassword
+   ```
+
+   > For email, you'll need to generate a [Gmail App Password](https://myaccount.google.com/apppasswords)
+
+4. **Set up the database**
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. **Start the server**
+   ```bash
+   node src/index.js
+   ```
+
+6. **Visit the website**
+
+   Open your browser and go to: `http://localhost:3000`
 
 ---
 
-## 📌 Current Status
+## 🔌 API Endpoints
 
-- Backend API connected to database
-- Frontend displaying live data
-- Tickets, users, and payments in progress
-
----
-
-## 📈 Planned Features
-
-- Admin UI to create prize pools
-- Ticket purchasing system
-- User accounts
-- Payment integration
-- Confirmation emails
-- Improved UI styling
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/pools` | Get all prize pools |
+| POST | `/api/pools` | Create a new pool |
+| POST | `/api/pools/:id/buy` | Buy a ticket for a pool |
+| POST | `/api/pools/:id/winner` | Randomly pick a winner |
 
 ---
 
-## 🎯 Purpose of This Project
+## 📸 Preview
 
-This project was created to:
-- Learn full-stack web development
-- Practice working with APIs and databases
-- Build a real, explainable portfolio project for job applications
+### Active Pools
+- Dark luxury UI with gold accents
+- Progress bars showing tickets sold
+- Buy ticket modal with name and email form
+
+### Emails
+- Branded confirmation email sent on ticket purchase
+- Winner notification email sent when a winner is picked
+
+---
+
+## ⚠️ Disclaimer
+
+This project is for **educational and portfolio purposes only**. It is not intended to be used as a real commercial service.
 
 ---
 
 ## 👤 Author
 
-Rainen Scaife  
-Junior Developer (Learning Project)
-
----
-
-## 📄 License
-
-This project is for educational and portfolio purposes.
+**Scxifey** — [GitHub](https://github.com/Scxifey)
