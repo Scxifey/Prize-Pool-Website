@@ -1,25 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const prisma = new PrismaClient();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Helper function to send emails
 async function sendEmail(to, subject, html) {
   try {
-const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-    await transporter.sendMail({
-      from: `"Prize Pool" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: "Prize Pool <onboarding@resend.dev>",
       to,
       subject,
       html,
@@ -47,12 +39,10 @@ router.post("/:id/checkout", async (req, res) => {
     const poolId = parseInt(req.params.id);
     let { name, email, quantity } = req.body;
 
-    // Sanitize inputs
     name = name ? name.trim().replace(/[<>]/g, '') : '';
     email = email ? email.trim().toLowerCase() : '';
     quantity = parseInt(quantity) || 1;
 
-    // Validate
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!name || !email) {
       return res.status(400).json({ error: "Please provide name and email" });
@@ -70,13 +60,11 @@ router.post("/:id/checkout", async (req, res) => {
       return res.status(400).json({ error: "Quantity must be between 1 and 10" });
     }
 
-    // Find the pool
     const pool = await prisma.pool.findUnique({ where: { id: poolId } });
     if (!pool) {
       return res.status(404).json({ error: "Pool not found" });
     }
 
-    // Check if enough tickets are available
     const ticketsLeft = pool.ticketCap - pool.ticketsSold;
     if (ticketsLeft <= 0) {
       return res.status(400).json({ error: "Sorry, this pool is sold out!" });
@@ -86,7 +74,6 @@ router.post("/:id/checkout", async (req, res) => {
       return res.status(400).json({ error: `Only ${ticketsLeft} ticket(s) remaining!` });
     }
 
-    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -134,13 +121,11 @@ router.get("/confirm", async (req, res) => {
     const { poolId, name, email, quantity } = session.metadata;
     const qty = parseInt(quantity) || 1;
 
-    // Find or create user
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       user = await prisma.user.create({ data: { name, email } });
     }
 
-    // Check if tickets already created for this session (prevent duplicates)
     const existingTicket = await prisma.ticket.findFirst({
       where: { stripeSessionId: session_id }
     });
@@ -152,7 +137,6 @@ router.get("/confirm", async (req, res) => {
       return res.json({ message: "Tickets already created", tickets: allTickets });
     }
 
-    // Create multiple tickets
     const tickets = [];
     for (let i = 0; i < qty; i++) {
       const ticket = await prisma.ticket.create({
@@ -165,13 +149,11 @@ router.get("/confirm", async (req, res) => {
       tickets.push(ticket);
     }
 
-    // Update tickets sold count
     await prisma.pool.update({
       where: { id: parseInt(poolId) },
       data: { ticketsSold: { increment: qty } }
     });
 
-    // Send confirmation email listing all ticket IDs
     const pool = await prisma.pool.findUnique({ where: { id: parseInt(poolId) } });
     const ticketList = tickets.map(t => `<li style="color: #f5c518; font-size: 1.1rem;">#${t.id}</li>`).join('');
 

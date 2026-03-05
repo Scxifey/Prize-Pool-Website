@@ -1,24 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
 const prisma = new PrismaClient();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Helper function to send emails
 async function sendEmail(to, subject, html) {
   try {
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-    await transporter.sendMail({
-      from: `"Prize Pool" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: "Prize Pool <onboarding@resend.dev>",
       to,
       subject,
       html,
@@ -86,7 +78,6 @@ router.post("/pools", isAdmin, async (req, res) => {
   try {
     let { title, ticketPrice, ticketCap } = req.body;
 
-    // Sanitize inputs
     title = title ? title.trim().replace(/[<>]/g, '') : '';
     ticketPrice = parseFloat(ticketPrice);
     ticketCap = parseInt(ticketCap);
@@ -132,19 +123,15 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
       return res.status(400).json({ error: "No tickets sold for this pool yet!" });
     }
 
-    // Pick a random winner
     const winningTicket = tickets[Math.floor(Math.random() * tickets.length)];
 
-    // Mark as winner
     await prisma.ticket.update({
       where: { id: winningTicket.id },
       data: { isWinner: true }
     });
 
-    // Get pool details
     const pool = await prisma.pool.findUnique({ where: { id: poolId } });
 
-    // Send winner email
     sendEmail(
       winningTicket.user.email,
       `🏆 You won — ${pool.title}!`,
@@ -163,7 +150,6 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
       `
     );
 
-    // Send loser emails to everyone else
     const losingTickets = tickets.filter(t => t.id !== winningTicket.id);
     const losingUsers = [...new Map(losingTickets.map(t => [t.user.email, t.user])).values()];
 
@@ -207,12 +193,10 @@ router.delete("/pools/:id", isAdmin, async (req, res) => {
   try {
     const poolId = parseInt(req.params.id);
 
-    // Delete all tickets for this pool first
     await prisma.ticket.deleteMany({
       where: { poolId }
     });
 
-    // Then delete the pool
     await prisma.pool.delete({
       where: { id: poolId }
     });
