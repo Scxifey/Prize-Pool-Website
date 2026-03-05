@@ -145,7 +145,7 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
     const pool = await prisma.pool.findUnique({ where: { id: poolId } });
 
     // Send winner email
-    await sendEmail(
+    sendEmail(
       winningTicket.user.email,
       `🏆 You won — ${pool.title}!`,
       `
@@ -168,7 +168,7 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
     const losingUsers = [...new Map(losingTickets.map(t => [t.user.email, t.user])).values()];
 
     for (const user of losingUsers) {
-      await sendEmail(
+      sendEmail(
         user.email,
         `Better luck next time — ${pool.title}`,
         `

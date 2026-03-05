@@ -175,7 +175,7 @@ router.get("/confirm", async (req, res) => {
     const pool = await prisma.pool.findUnique({ where: { id: parseInt(poolId) } });
     const ticketList = tickets.map(t => `<li style="color: #f5c518; font-size: 1.1rem;">#${t.id}</li>`).join('');
 
-    await sendEmail(
+    sendEmail(
       email,
       `🎟 ${qty} Ticket(s) Confirmed — ${pool.title}`,
       `
