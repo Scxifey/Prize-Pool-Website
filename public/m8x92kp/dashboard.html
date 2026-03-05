@@ -605,7 +605,7 @@
 
   <main>
 
-    <div class="stats-row">
+<div class="stats-row">
       <div class="stat-card" style="animation-delay:0s">
         <div class="stat-card-label">Total Pools</div>
         <div class="stat-card-value" id="statPools">—</div>
@@ -618,6 +618,10 @@
         <div class="stat-card-label">Total Customers</div>
         <div class="stat-card-value" id="statCustomers">—</div>
         <div class="stat-card-hint">Click to view →</div>
+      </div>
+      <div class="stat-card" style="animation-delay:0.3s">
+        <div class="stat-card-label">Total Revenue</div>
+        <div class="stat-card-value" id="statRevenue">—</div>
       </div>
     </div>
 
@@ -691,9 +695,11 @@
 
     async function loadStats(pools, users) {
       const totalTickets = pools.reduce((sum, p) => sum + p.ticketsSold, 0);
+      const totalRevenue = pools.reduce((sum, p) => sum + (p.ticketsSold * p.ticketPrice), 0);
       document.getElementById('statPools').textContent = pools.length;
       document.getElementById('statTickets').textContent = totalTickets;
       document.getElementById('statCustomers').textContent = users.length;
+      document.getElementById('statRevenue').textContent = `£${totalRevenue.toFixed(2)}`;
     }
 
     async function loadPools() {
@@ -714,7 +720,7 @@
         card.style.animationDelay = `${i * 0.08}s`;
         card.innerHTML = `
           <div class="pool-title">${pool.title}</div>
-          <div class="pool-stats">
+            <div class="pool-stats">
             <div class="stat">
               <div class="stat-label">Ticket Price</div>
               <div class="stat-value gold">£${pool.ticketPrice.toFixed(2)}</div>
@@ -722,6 +728,14 @@
             <div class="stat">
               <div class="stat-label">Tickets Left</div>
               <div class="stat-value">${pool.ticketCap - pool.ticketsSold}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Revenue</div>
+              <div class="stat-value gold">£${(pool.ticketsSold * pool.ticketPrice).toFixed(2)}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Potential</div>
+              <div class="stat-value">£${(pool.ticketCap * pool.ticketPrice).toFixed(2)}</div>
             </div>
           </div>
           <div class="progress-wrap">
