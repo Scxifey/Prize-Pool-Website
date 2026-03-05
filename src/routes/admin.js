@@ -150,7 +150,7 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
       `
     );
 
-    const losingTickets = tickets.filter(t => t.id !== winningTicket.id);
+    const losingTickets = tickets.filter(t => t.user.email !== winningTicket.user.email);
     const losingUsers = [...new Map(losingTickets.map(t => [t.user.email, t.user])).values()];
 
     for (const user of losingUsers) {
