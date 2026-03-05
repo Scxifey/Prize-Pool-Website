@@ -75,7 +75,6 @@
       margin-bottom: 32px;
     }
 
-    /* Trust Badges */
     .trust-badges {
       display: flex;
       flex-wrap: wrap;
@@ -99,7 +98,6 @@
 
     .badge-icon { font-size: 0.95rem; }
 
-    /* How it works */
     .how-it-works {
       position: relative;
       z-index: 1;
@@ -183,10 +181,7 @@
       box-shadow: 0 0 20px rgba(245, 197, 24, 0.3);
     }
 
-    .step-icon {
-      font-size: 1.8rem;
-      margin-bottom: 12px;
-    }
+    .step-icon { font-size: 1.8rem; margin-bottom: 12px; }
 
     .step-title {
       font-family: 'Bebas Neue', cursive;
@@ -196,11 +191,7 @@
       margin-bottom: 8px;
     }
 
-    .step-desc {
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.6;
-    }
+    .step-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
 
     main {
       position: relative;
@@ -354,6 +345,90 @@
       border: 1px solid var(--border);
     }
 
+    /* FAQ */
+    .faq-section {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 60px 40px;
+    }
+
+    .faq-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .faq-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .faq-item.open { border-color: var(--gold-dim); }
+
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      cursor: pointer;
+      background: var(--surface);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: background 0.2s;
+      user-select: none;
+      gap: 16px;
+    }
+
+    .faq-question:hover { background: var(--surface2); }
+
+    .faq-icon {
+      font-size: 1.1rem;
+      color: var(--gold);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      padding: 0 22px;
+    }
+
+    .faq-answer.open {
+      max-height: 300px;
+      padding: 0 22px 18px;
+    }
+
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -481,7 +556,6 @@
       font-size: 0.95rem;
     }
 
-    /* Footer */
     footer {
       position: relative;
       z-index: 1;
@@ -502,20 +576,14 @@
       main { padding: 30px 16px; }
       header { padding: 40px 16px 40px; }
       .how-it-works { padding: 40px 16px; }
+      .faq-section { padding: 40px 16px; }
       .pool-card { padding: 20px; }
       .modal { padding: 24px 20px; }
       #poolsGrid { grid-template-columns: 1fr; }
       .steps { grid-template-columns: 1fr; }
       .steps::before { display: none; }
       footer { padding: 24px 16px; }
-
-      #toast {
-        bottom: 16px;
-        right: 16px;
-        left: 16px;
-        max-width: 100%;
-      }
-
+      #toast { bottom: 16px; right: 16px; left: 16px; max-width: 100%; }
       .trust-badges { gap: 8px; }
       .badge { font-size: 0.75rem; padding: 6px 12px; }
     }
@@ -565,6 +633,84 @@
     <div class="section-title">Active Pools</div>
     <div id="poolsGrid"><div class="empty-state">Loading pools...</div></div>
   </main>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="faq-inner">
+      <div class="faq-title">Frequently Asked Questions</div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          How is the winner chosen?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          Winners are selected completely at random from all valid ticket holders once a pool sells out. The draw is performed by our system and every ticket has an equal chance of winning regardless of when it was purchased.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          How do I know my entry was confirmed?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          As soon as your payment goes through you'll receive a confirmation email with your unique ticket ID(s). Keep this email as your proof of entry. If you don't receive it within a few minutes please check your spam folder.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Can I buy more than one ticket?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          Yes! You can purchase up to 10 tickets per transaction. Buying more tickets increases your chances of winning as each ticket is a separate entry into the draw.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          When does the draw take place?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          The draw takes place once all tickets in a pool have been sold. There is no fixed date — it depends entirely on how quickly the pool fills up. You can track the progress on each pool card in real time.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          How will I know if I've won?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          All participants are notified by email once the draw has taken place. If you win, you'll receive a winner email with details on how to claim your prize. If you don't win this time, you'll receive a thank you email with a link to enter future pools.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Is my payment secure?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          Absolutely. All payments are processed by Stripe, one of the world's most trusted payment providers. We never store your card details — everything is handled securely by Stripe's encrypted checkout.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Can I get a refund?
+          <span class="faq-icon">＋</span>
+        </div>
+        <div class="faq-answer">
+          Once a ticket has been purchased and entered into a pool it is non-refundable. This is because your ticket immediately forms part of the active draw. Please make sure you're happy with your entry before completing your purchase.
+        </div>
+      </div>
+
+    </div>
+  </section>
 
   <footer>
     © 2025 Prize Pool · Payments secured by Stripe · All draws are random and verified
@@ -646,6 +792,24 @@
         });
       } catch (err) {
         document.getElementById('poolsGrid').innerHTML = '<div class="empty-state">Failed to load pools.</div>';
+      }
+    }
+
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      const answer = item.querySelector('.faq-answer');
+      const isOpen = item.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-answer').classList.remove('open');
+      });
+
+      // Open clicked if it wasn't already open
+      if (!isOpen) {
+        item.classList.add('open');
+        answer.classList.add('open');
       }
     }
 
