@@ -8,6 +8,8 @@ const adminRouter = require("./routes/admin");
 
 const app = express();
 
+app.set('trust proxy', 1); // trust first proxy for secure cookies
+
 // Security headers
 app.use(helmet({
   contentSecurityPolicy: false // disabled to allow Google Fonts to load
