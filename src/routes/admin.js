@@ -1,9 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
+const nodemailer = require("nodemailer");
 
 const prisma = new PrismaClient();
+
+// Helper function to send emails
+async function sendEmail(to, subject, html) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    await transporter.sendMail({
+      from: `"Prize Pool" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+    console.log(`Email sent to ${to}`);
+  } catch (err) {
+    console.error("Email failed:", err);
+  }
+}
 
 // Middleware to protect admin routes
 function isAdmin(req, res, next) {
@@ -91,12 +113,61 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
       return res.status(400).json({ error: "No tickets sold for this pool yet!" });
     }
 
+    // Pick a random winner
     const winningTicket = tickets[Math.floor(Math.random() * tickets.length)];
 
+    // Mark as winner
     await prisma.ticket.update({
       where: { id: winningTicket.id },
       data: { isWinner: true }
     });
+
+    // Get pool details
+    const pool = await prisma.pool.findUnique({ where: { id: poolId } });
+
+    // Send winner email
+    await sendEmail(
+      winningTicket.user.email,
+      `🏆 You won — ${pool.title}!`,
+      `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #0a0a0f; color: #e8e8f0; padding: 40px; border-radius: 12px;">
+          <h1 style="color: #f5c518; font-size: 2rem; margin-bottom: 8px;">Prize Pool</h1>
+          <p style="color: #7070a0; margin-bottom: 30px;">Winner Announcement</p>
+          <h2 style="color: #f5c518; font-size: 1.6rem;">🏆 Congratulations!</h2>
+          <p style="margin-top: 12px;">Hi <strong>${winningTicket.user.name}</strong>, you've been selected as the winner of <strong style="color: #f5c518;">${pool.title}</strong>!</p>
+          <div style="background: #13131a; border: 1px solid #f5c518; border-radius: 8px; padding: 20px; margin: 24px 0;">
+            <p style="margin: 0; font-size: 0.85rem; color: #7070a0;">WINNING TICKET</p>
+            <p style="margin: 4px 0 0; font-size: 1.4rem; color: #f5c518;">#${winningTicket.id}</p>
+          </div>
+          <p style="color: #7070a0; font-size: 0.9rem;">We'll be in touch shortly with your prize details. 🎉</p>
+        </div>
+      `
+    );
+
+    // Send loser emails to everyone else
+    const losingTickets = tickets.filter(t => t.id !== winningTicket.id);
+    const losingUsers = [...new Map(losingTickets.map(t => [t.user.email, t.user])).values()];
+
+    for (const user of losingUsers) {
+      await sendEmail(
+        user.email,
+        `Better luck next time — ${pool.title}`,
+        `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #0a0a0f; color: #e8e8f0; padding: 40px; border-radius: 12px;">
+            <h1 style="color: #f5c518; font-size: 2rem; margin-bottom: 8px;">Prize Pool</h1>
+            <p style="color: #7070a0; margin-bottom: 30px;">Draw Results</p>
+            <h2 style="color: #e8e8f0; font-size: 1.6rem;">Thanks for entering!</h2>
+            <p style="margin-top: 12px;">Hi <strong>${user.name}</strong>, unfortunately you didn't win the <strong style="color: #f5c518;">${pool.title}</strong> draw this time.</p>
+            <div style="background: #13131a; border: 1px solid #2a2a3a; border-radius: 8px; padding: 20px; margin: 24px 0;">
+              <p style="margin: 0; font-size: 0.85rem; color: #7070a0;">WINNER</p>
+              <p style="margin: 4px 0 0; font-size: 1.1rem; color: #e8e8f0;">${winningTicket.user.name}</p>
+            </div>
+            <p style="color: #7070a0; font-size: 0.9rem;">Don't give up — new pools are added regularly. Good luck next time! 🍀</p>
+            <a href="${process.env.BASE_URL}" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #f5c518; color: #0a0a0f; text-decoration: none; border-radius: 8px; font-weight: 500;">View Active Pools</a>
+          </div>
+        `
+      );
+    }
 
     res.json({
       message: "Winner picked!",
