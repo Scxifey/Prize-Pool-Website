@@ -226,7 +226,6 @@
       border: 1px solid var(--border);
     }
 
-    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -314,6 +313,18 @@
       color: var(--gold);
     }
 
+    .total-price {
+      text-align: right;
+      color: var(--gold);
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
     #toast {
       position: fixed;
       bottom: 30px;
@@ -363,17 +374,23 @@
   <div class="modal-overlay" id="buyModal">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title">Buy a Ticket</div>
+      <div class="modal-title">Buy Tickets</div>
       <input type="hidden" id="buyPoolId">
+      <input type="hidden" id="buyTicketPrice">
       <div class="form-group">
         <label>Your Name</label>
         <input type="text" id="buyName" placeholder="John Doe">
       </div>
-      <div class="form-group" style="margin-bottom:24px">
+      <div class="form-group">
         <label>Your Email</label>
         <input type="email" id="buyEmail" placeholder="john@example.com">
       </div>
-      <button class="btn btn-gold" onclick="buyTicket()">🎟 Purchase Ticket</button>
+      <div class="form-group">
+        <label>Number of Tickets (max 10)</label>
+        <input type="number" id="buyQuantity" value="1" min="1" max="10" oninput="updateTotal()">
+      </div>
+      <div class="total-price" id="totalPrice">Total: £0.00</div>
+      <button class="btn btn-gold" onclick="buyTicket()">🎟 Purchase Tickets</button>
       <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
     </div>
   </div>
@@ -422,7 +439,7 @@
             </div>
             ${soldOut
               ? '<div class="sold-out">🔒 Sold Out</div>'
-              : `<button class="btn btn-gold" onclick="openBuyModal(${pool.id})">🎟 Buy Ticket</button>`
+              : `<button class="btn btn-gold" onclick="openBuyModal(${pool.id}, ${pool.ticketPrice})">🎟 Buy Tickets</button>`
             }
           `;
           grid.appendChild(card);
@@ -432,11 +449,21 @@
       }
     }
 
-    function openBuyModal(poolId) {
+    function openBuyModal(poolId, ticketPrice) {
       document.getElementById('buyPoolId').value = poolId;
+      document.getElementById('buyTicketPrice').value = ticketPrice;
       document.getElementById('buyName').value = '';
       document.getElementById('buyEmail').value = '';
+      document.getElementById('buyQuantity').value = 1;
+      updateTotal();
       document.getElementById('buyModal').classList.add('open');
+    }
+
+    function updateTotal() {
+      const price = parseFloat(document.getElementById('buyTicketPrice').value) || 0;
+      const qty = parseInt(document.getElementById('buyQuantity').value) || 1;
+      const total = (price * qty).toFixed(2);
+      document.getElementById('totalPrice').textContent = `Total: £${total}`;
     }
 
     function closeModal() {
@@ -447,9 +474,15 @@
       const poolId = document.getElementById('buyPoolId').value;
       const name = document.getElementById('buyName').value.trim();
       const email = document.getElementById('buyEmail').value.trim();
+      const quantity = parseInt(document.getElementById('buyQuantity').value) || 1;
 
       if (!name || !email) {
         showToast('Please enter your name and email!', 'error');
+        return;
+      }
+
+      if (quantity < 1 || quantity > 10) {
+        showToast('Please select between 1 and 10 tickets!', 'error');
         return;
       }
 
@@ -457,12 +490,10 @@
         const res = await fetch(`/api/pools/${poolId}/checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email })
+          body: JSON.stringify({ name, email, quantity })
         });
         const data = await res.json();
         if (!res.ok) { showToast(data.error, 'error'); return; }
-
-        // Redirect to Stripe checkout
         window.location.href = data.url;
       } catch (err) {
         showToast('Failed to start checkout.', 'error');

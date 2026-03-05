@@ -43,13 +43,14 @@ router.get("/", async (req, res) => {
 router.post("/:id/checkout", async (req, res) => {
   try {
     const poolId = parseInt(req.params.id);
-    let { name, email } = req.body;
+    let { name, email, quantity } = req.body;
 
     // Sanitize inputs
     name = name ? name.trim().replace(/[<>]/g, '') : '';
     email = email ? email.trim().toLowerCase() : '';
+    quantity = parseInt(quantity) || 1;
 
-    // Validate email format
+    // Validate
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!name || !email) {
       return res.status(400).json({ error: "Please provide name and email" });
@@ -63,15 +64,24 @@ router.post("/:id/checkout", async (req, res) => {
       return res.status(400).json({ error: "Name is too long" });
     }
 
+    if (quantity < 1 || quantity > 10) {
+      return res.status(400).json({ error: "Quantity must be between 1 and 10" });
+    }
+
     // Find the pool
     const pool = await prisma.pool.findUnique({ where: { id: poolId } });
     if (!pool) {
       return res.status(404).json({ error: "Pool not found" });
     }
 
-    // Check if sold out
-    if (pool.ticketsSold >= pool.ticketCap) {
+    // Check if enough tickets are available
+    const ticketsLeft = pool.ticketCap - pool.ticketsSold;
+    if (ticketsLeft <= 0) {
       return res.status(400).json({ error: "Sorry, this pool is sold out!" });
+    }
+
+    if (quantity > ticketsLeft) {
+      return res.status(400).json({ error: `Only ${ticketsLeft} ticket(s) remaining!` });
     }
 
     // Create Stripe checkout session
@@ -83,11 +93,11 @@ router.post("/:id/checkout", async (req, res) => {
             currency: "gbp",
             product_data: {
               name: `Ticket — ${pool.title}`,
-              description: `One entry into the ${pool.title} prize pool`,
+              description: `${quantity} entry ticket(s) into the ${pool.title} prize pool`,
             },
             unit_amount: Math.round(pool.ticketPrice * 100),
           },
-          quantity: 1,
+          quantity: quantity,
         },
       ],
       mode: "payment",
@@ -97,6 +107,7 @@ router.post("/:id/checkout", async (req, res) => {
         poolId: poolId.toString(),
         name,
         email,
+        quantity: quantity.toString(),
       },
     });
 
@@ -107,7 +118,7 @@ router.post("/:id/checkout", async (req, res) => {
   }
 });
 
-// GET - Confirm payment and create ticket
+// GET - Confirm payment and create tickets
 router.get("/confirm", async (req, res) => {
   try {
     const { session_id } = req.query;
@@ -118,7 +129,8 @@ router.get("/confirm", async (req, res) => {
       return res.status(400).json({ error: "Payment not completed" });
     }
 
-    const { poolId, name, email } = session.metadata;
+    const { poolId, name, email, quantity } = session.metadata;
+    const qty = parseInt(quantity) || 1;
 
     // Find or create user
     let user = await prisma.user.findUnique({ where: { email } });
@@ -126,51 +138,62 @@ router.get("/confirm", async (req, res) => {
       user = await prisma.user.create({ data: { name, email } });
     }
 
-    // Check if ticket already created for this session (prevent duplicates)
+    // Check if tickets already created for this session (prevent duplicates)
     const existingTicket = await prisma.ticket.findFirst({
       where: { stripeSessionId: session_id }
     });
 
     if (existingTicket) {
-      return res.json({ message: "Ticket already created", ticket: existingTicket });
+      const allTickets = await prisma.ticket.findMany({
+        where: { stripeSessionId: session_id }
+      });
+      return res.json({ message: "Tickets already created", tickets: allTickets });
     }
 
-    // Create the ticket
-    const ticket = await prisma.ticket.create({
-      data: {
-        poolId: parseInt(poolId),
-        userId: user.id,
-        stripeSessionId: session_id
-      }
-    });
+    // Create multiple tickets
+    const tickets = [];
+    for (let i = 0; i < qty; i++) {
+      const ticket = await prisma.ticket.create({
+        data: {
+          poolId: parseInt(poolId),
+          userId: user.id,
+          stripeSessionId: i === 0 ? session_id : `${session_id}_${i}`
+        }
+      });
+      tickets.push(ticket);
+    }
 
-    // Update tickets sold
+    // Update tickets sold count
     await prisma.pool.update({
       where: { id: parseInt(poolId) },
-      data: { ticketsSold: { increment: 1 } }
+      data: { ticketsSold: { increment: qty } }
     });
 
-    // Send confirmation email
+    // Send confirmation email listing all ticket IDs
     const pool = await prisma.pool.findUnique({ where: { id: parseInt(poolId) } });
+    const ticketList = tickets.map(t => `<li style="color: #f5c518; font-size: 1.1rem;">#${t.id}</li>`).join('');
+
     await sendEmail(
       email,
-      `🎟 Ticket Confirmed — ${pool.title}`,
+      `🎟 ${qty} Ticket(s) Confirmed — ${pool.title}`,
       `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #0a0a0f; color: #e8e8f0; padding: 40px; border-radius: 12px;">
           <h1 style="color: #f5c518; font-size: 2rem; margin-bottom: 8px;">Prize Pool</h1>
           <p style="color: #7070a0; margin-bottom: 30px;">Ticket Confirmation</p>
           <p>Hi <strong>${name}</strong>,</p>
-          <p style="margin-top: 12px;">Your ticket for <strong style="color: #f5c518;">${pool.title}</strong> has been confirmed!</p>
+          <p style="margin-top: 12px;">Your <strong>${qty} ticket(s)</strong> for <strong style="color: #f5c518;">${pool.title}</strong> have been confirmed!</p>
           <div style="background: #13131a; border: 1px solid #2a2a3a; border-radius: 8px; padding: 20px; margin: 24px 0;">
-            <p style="margin: 0; font-size: 0.85rem; color: #7070a0;">TICKET ID</p>
-            <p style="margin: 4px 0 0; font-size: 1.4rem; color: #f5c518;">#${ticket.id}</p>
+            <p style="margin: 0 0 12px; font-size: 0.85rem; color: #7070a0;">YOUR TICKET IDS</p>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              ${ticketList}
+            </ul>
           </div>
           <p style="color: #7070a0; font-size: 0.9rem;">Good luck! 🍀 We'll email you if you win.</p>
         </div>
       `
     );
 
-    res.json({ message: "Ticket created!", ticket });
+    res.json({ message: "Tickets created!", tickets });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to confirm payment" });

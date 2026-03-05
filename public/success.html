@@ -133,7 +133,7 @@
     <a href="/" class="btn">← Back to Pools</a>
   </div>
 
-  <script>
+<script>
     async function confirmTicket() {
       const params = new URLSearchParams(window.location.search);
       const sessionId = params.get('session_id');
@@ -148,7 +148,14 @@
         const data = await res.json();
 
         if (res.ok) {
-          document.getElementById('ticketId').textContent = `#${data.ticket.id}`;
+          const tickets = data.tickets || [data.ticket];
+          if (tickets.length === 1) {
+            document.getElementById('ticketId').textContent = `#${tickets[0].id}`;
+          } else {
+            document.getElementById('ticketId').innerHTML = tickets
+              .map(t => `<div>#${t.id}</div>`)
+              .join('');
+          }
         } else {
           document.getElementById('ticketId').textContent = data.error;
         }
