@@ -82,10 +82,27 @@ router.get("/users", isAdmin, async (req, res) => {
 // POST - Create pool (protected)
 router.post("/pools", isAdmin, async (req, res) => {
   try {
-    const { title, ticketPrice, ticketCap } = req.body;
+    let { title, ticketPrice, ticketCap } = req.body;
 
-    if (!title || !ticketPrice || !ticketCap) {
-      return res.status(400).json({ error: "Please provide title, ticketPrice and ticketCap" });
+    // Sanitize inputs
+    title = title ? title.trim().replace(/[<>]/g, '') : '';
+    ticketPrice = parseFloat(ticketPrice);
+    ticketCap = parseInt(ticketCap);
+
+    if (!title) {
+      return res.status(400).json({ error: "Please provide a title" });
+    }
+
+    if (title.length > 100) {
+      return res.status(400).json({ error: "Title is too long" });
+    }
+
+    if (isNaN(ticketPrice) || ticketPrice < 0.30) {
+      return res.status(400).json({ error: "Ticket price must be at least £0.30" });
+    }
+
+    if (isNaN(ticketCap) || ticketCap < 1 || ticketCap > 10000) {
+      return res.status(400).json({ error: "Ticket cap must be between 1 and 10,000" });
     }
 
     const pool = await prisma.pool.create({

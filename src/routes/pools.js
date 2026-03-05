@@ -43,10 +43,24 @@ router.get("/", async (req, res) => {
 router.post("/:id/checkout", async (req, res) => {
   try {
     const poolId = parseInt(req.params.id);
-    const { name, email } = req.body;
+    let { name, email } = req.body;
 
+    // Sanitize inputs
+    name = name ? name.trim().replace(/[<>]/g, '') : '';
+    email = email ? email.trim().toLowerCase() : '';
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!name || !email) {
       return res.status(400).json({ error: "Please provide name and email" });
+    }
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Please provide a valid email address" });
+    }
+
+    if (name.length > 100) {
+      return res.status(400).json({ error: "Name is too long" });
     }
 
     // Find the pool
@@ -71,7 +85,7 @@ router.post("/:id/checkout", async (req, res) => {
               name: `Ticket — ${pool.title}`,
               description: `One entry into the ${pool.title} prize pool`,
             },
-            unit_amount: Math.round(pool.ticketPrice * 100), // Stripe uses pence
+            unit_amount: Math.round(pool.ticketPrice * 100),
           },
           quantity: 1,
         },
@@ -98,7 +112,6 @@ router.get("/confirm", async (req, res) => {
   try {
     const { session_id } = req.query;
 
-    // Retrieve the session from Stripe
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     if (session.payment_status !== "paid") {
