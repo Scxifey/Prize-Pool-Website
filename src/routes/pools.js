@@ -184,4 +184,34 @@ router.get("/confirm", async (req, res) => {
   }
 });
 
+// GET - Look up tickets by email
+router.get("/tickets", async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email required" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "No user found" });
+    }
+
+    const tickets = await prisma.ticket.findMany({
+      where: { userId: user.id },
+      include: { pool: true },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({ user, tickets });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to look up tickets" });
+  }
+});
+
 module.exports = router;

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Tickets — Prize Pool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c518;
+      --gold-dim: #c9a012;
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c27;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #7070a0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #1a1508 0%, transparent 100%);
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-back:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .search-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 40px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.08);
+    }
+
+    input::placeholder { color: var(--muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-gold { background: var(--gold); color: #0a0a0f; }
+
+    .btn-gold:hover {
+      background: #ffd700;
+      box-shadow: 0 4px 20px rgba(245, 197, 24, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-gold:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #results { display: none; }
+
+    .results-header {
+      margin-bottom: 20px;
+    }
+
+    .results-name {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .results-meta {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pool-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .pool-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pool-group-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem;
+      letter-spacing: 0.06em;
+    }
+
+    .pool-group-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .tag-active {
+      background: rgba(245, 197, 24, 0.1);
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .tag-winner {
+      background: rgba(80, 200, 120, 0.1);
+      border: 1px solid #50c878;
+      color: #50c878;
+    }
+
+    .tag-count {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 20px 24px;
+    }
+
+    .ticket-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .ticket-chip.winner {
+      background: rgba(80, 200, 120, 0.08);
+      border-color: #50c878;
+    }
+
+    .ticket-chip-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .ticket-chip-id {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+    }
+
+    .ticket-chip.winner .ticket-chip-id { color: #50c878; }
+
+    .ticket-chip-winner-label {
+      font-size: 0.65rem;
+      color: #50c878;
+      margin-top: 2px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #e05252;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--gold); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 16px 20px; }
+      main { padding: 40px 20px; }
+      .search-row { flex-direction: column; }
+      .tickets-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+      footer { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">Prize Pool</a>
+    <a href="/" class="btn-back">← Back to Pools</a>
+  </header>
+
+  <main>
+    <div class="page-title">My Tickets</div>
+    <div class="page-subtitle">Enter the email address you used when purchasing tickets to view all your entries.</div>
+
+    <div class="search-card">
+      <div class="search-row">
+        <input type="email" id="emailInput" placeholder="Enter your email address..." onkeydown="if(event.key==='Enter') lookupTickets()">
+        <button class="btn btn-gold" id="lookupBtn" onclick="lookupTickets()">🔍 Look Up</button>
+      </div>
+    </div>
+
+    <div id="results"></div>
+  </main>
+
+  <footer>
+    © 2025 Prize Pool · <a href="/terms.html">Terms & Conditions</a> · Payments secured by Stripe
+  </footer>
+
+  <script>
+    async function lookupTickets() {
+      const email = document.getElementById('emailInput').value.trim().toLowerCase();
+      const results = document.getElementById('results');
+      const btn = document.getElementById('lookupBtn');
+
+      if (!email || !email.includes('@')) {
+        results.style.display = 'block';
+        results.innerHTML = '<div class="error-state">Please enter a valid email address.</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Looking up...';
+      results.style.display = 'none';
+
+      try {
+        const res = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+
+        btn.disabled = false;
+        btn.innerHTML = '🔍 Look Up';
+        results.style.display = 'block';
+
+        if (!res.ok || !data.user) {
+          results.innerHTML = '<div class="empty-state">No tickets found for that email address.<br><br>Make sure you\'re using the same email you entered when purchasing.</div>';
+          return;
+        }
+
+        const { user, tickets } = data;
+
+        if (tickets.length === 0) {
+          results.innerHTML = '<div class="empty-state">No tickets found for that email address.</div>';
+          return;
+        }
+
+        // Group tickets by pool
+        const poolMap = {};
+        tickets.forEach(t => {
+          if (!poolMap[t.poolId]) {
+            poolMap[t.poolId] = {
+              title: t.pool.title,
+              tickets: [],
+              hasWinner: false
+            };
+          }
+          poolMap[t.poolId].tickets.push(t);
+          if (t.isWinner) poolMap[t.poolId].hasWinner = true;
+        });
+
+        const totalTickets = tickets.length;
+        const wonPools = Object.values(poolMap).filter(p => p.hasWinner).length;
+
+        let html = `
+          <div class="results-header">
+            <div class="results-name">👋 ${user.name}</div>
+            <div class="results-meta">${totalTickets} ticket${totalTickets !== 1 ? 's' : ''} across ${Object.keys(poolMap).length} pool${Object.keys(poolMap).length !== 1 ? 's' : ''}${wonPools > 0 ? ` · 🏆 ${wonPools} win${wonPools !== 1 ? 's' : ''}` : ''}</div>
+          </div>
+        `;
+
+        Object.values(poolMap).forEach(pool => {
+          html += `
+            <div class="pool-group">
+              <div class="pool-group-header">
+                <div class="pool-group-title">${pool.title}</div>
+                <div class="pool-group-meta">
+                  ${pool.hasWinner ? '<span class="tag tag-winner">🏆 Winner</span>' : '<span class="tag tag-active">Active</span>'}
+                  <span class="tag tag-count">${pool.tickets.length} ticket${pool.tickets.length !== 1 ? 's' : ''}</span>
+                </div>
+              </div>
+              <div class="tickets-grid">
+                ${pool.tickets.map(t => `
+                  <div class="ticket-chip ${t.isWinner ? 'winner' : ''}">
+                    <div class="ticket-chip-label">Ticket</div>
+                    <div class="ticket-chip-id">#${t.id}</div>
+                    ${t.isWinner ? '<div class="ticket-chip-winner-label">🏆 Winner</div>' : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        results.innerHTML = html;
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '🔍 Look Up';
+        results.style.display = 'block';
+        results.innerHTML = '<div class="error-state">Something went wrong. Please try again.</div>';
+      }
+    }
+  </script>
+</body>
+</html>
