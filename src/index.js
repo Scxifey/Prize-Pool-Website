@@ -55,7 +55,10 @@ app.use("/api/pools/:id/checkout", buyLimiter);
 app.use("/api/admin/login", loginLimiter);
 
 // Routes
-app.use("/api/pools", poolsRouter);
+app.use("/api/pools/:id/checkout", (req, res, next) => {
+  if (req.params.id === 'confirm') return next();
+  buyLimiter(req, res, next);
+});
 app.use("/api/admin", adminRouter);
 
 const PORT = 3000;
