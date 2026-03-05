@@ -40,8 +40,7 @@
     header {
       position: relative;
       text-align: center;
-      padding: 60px 20px 40px;
-      border-bottom: 1px solid var(--border);
+      padding: 60px 20px 50px;
       background: linear-gradient(180deg, #1a1508 0%, transparent 100%);
     }
 
@@ -73,6 +72,134 @@
       letter-spacing: 0.3em;
       text-transform: uppercase;
       margin-top: 8px;
+      margin-bottom: 32px;
+    }
+
+    /* Trust Badges */
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(245, 197, 24, 0.06);
+      border: 1px solid rgba(245, 197, 24, 0.15);
+      border-radius: 99px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .badge-icon { font-size: 0.95rem; }
+
+    /* How it works */
+    .how-it-works {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(180deg, transparent, rgba(245, 197, 24, 0.03), transparent);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px;
+    }
+
+    .how-it-works-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .how-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .how-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: calc(16.66% + 20px);
+      right: calc(16.66% + 20px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+      opacity: 0.3;
+    }
+
+    .step {
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .step:hover {
+      border-color: var(--gold-dim);
+      transform: translateY(-4px);
+    }
+
+    .step-number {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.4rem;
+      color: #0a0a0f;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 20px rgba(245, 197, 24, 0.3);
+    }
+
+    .step-icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+
+    .step-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
     }
 
     main {
@@ -354,31 +481,33 @@
       font-size: 0.95rem;
     }
 
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 768px) {
-      main {
-        padding: 30px 16px;
-      }
-
-      header {
-        padding: 40px 16px 30px;
-      }
-
-      .pool-card {
-        padding: 20px;
-      }
-
-      .modal {
-        padding: 24px 20px;
-      }
-
-      #poolsGrid {
-        grid-template-columns: 1fr;
-      }
+      main { padding: 30px 16px; }
+      header { padding: 40px 16px 40px; }
+      .how-it-works { padding: 40px 16px; }
+      .pool-card { padding: 20px; }
+      .modal { padding: 24px 20px; }
+      #poolsGrid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      footer { padding: 24px 16px; }
 
       #toast {
         bottom: 16px;
@@ -386,6 +515,9 @@
         left: 16px;
         max-width: 100%;
       }
+
+      .trust-badges { gap: 8px; }
+      .badge { font-size: 0.75rem; padding: 6px 12px; }
     }
   </style>
 </head>
@@ -394,12 +526,49 @@
   <header>
     <div class="logo">Prize Pool</div>
     <div class="tagline">Buy a ticket. Win big.</div>
+    <div class="trust-badges">
+      <div class="badge"><span class="badge-icon">🔒</span> Secure payments via Stripe</div>
+      <div class="badge"><span class="badge-icon">📧</span> Instant email confirmation</div>
+      <div class="badge"><span class="badge-icon">🎟</span> Multiple tickets per entry</div>
+      <div class="badge"><span class="badge-icon">🏆</span> Verified winner selection</div>
+    </div>
   </header>
+
+  <!-- How it works -->
+  <section class="how-it-works">
+    <div class="how-it-works-inner">
+      <div class="how-title">How It Works</div>
+      <div class="steps">
+        <div class="step" style="animation-delay: 0s">
+          <div class="step-number">1</div>
+          <div class="step-icon">🎟</div>
+          <div class="step-title">Pick a Pool</div>
+          <div class="step-desc">Browse our active prize pools and choose the one you want to enter. Buy as many tickets as you like to increase your chances.</div>
+        </div>
+        <div class="step" style="animation-delay: 0.1s">
+          <div class="step-number">2</div>
+          <div class="step-icon">💳</div>
+          <div class="step-title">Secure Checkout</div>
+          <div class="step-desc">Pay securely via Stripe. Your ticket IDs are emailed to you instantly as proof of entry — no account needed.</div>
+        </div>
+        <div class="step" style="animation-delay: 0.2s">
+          <div class="step-number">3</div>
+          <div class="step-icon">🏆</div>
+          <div class="step-title">Winner Drawn</div>
+          <div class="step-desc">Once the pool sells out a winner is drawn fairly at random. Everyone is notified by email — winners receive their prize details directly.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <main>
     <div class="section-title">Active Pools</div>
     <div id="poolsGrid"><div class="empty-state">Loading pools...</div></div>
   </main>
+
+  <footer>
+    © 2025 Prize Pool · Payments secured by Stripe · All draws are random and verified
+  </footer>
 
   <!-- Buy Ticket Modal -->
   <div class="modal-overlay" id="buyModal">
