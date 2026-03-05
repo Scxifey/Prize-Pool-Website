@@ -2,15 +2,13 @@ const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const nodemailer = require("nodemailer");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const prisma = new PrismaClient();
-
 
 // Helper function to send emails
 async function sendEmail(to, subject, html) {
   try {
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "loaded" : "MISSING");
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -41,28 +39,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST - Create a new pool
-router.post("/", async (req, res) => {
-  try {
-    const { title, ticketPrice, ticketCap } = req.body;
-
-    if (!title || !ticketPrice || !ticketCap) {
-      return res.status(400).json({ error: "Please provide title, ticketPrice and ticketCap" });
-    }
-
-    const pool = await prisma.pool.create({
-      data: { title, ticketPrice, ticketCap }
-    });
-
-    res.json({ message: "Pool created!", pool });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to create pool" });
-  }
-});
-
-// POST - Buy a ticket
-router.post("/:id/buy", async (req, res) => {
+// POST - Create Stripe checkout session
+router.post("/:id/checkout", async (req, res) => {
   try {
     const poolId = parseInt(req.params.id);
     const { name, email } = req.body;
@@ -82,24 +60,85 @@ router.post("/:id/buy", async (req, res) => {
       return res.status(400).json({ error: "Sorry, this pool is sold out!" });
     }
 
-    // Find or create the user
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "gbp",
+            product_data: {
+              name: `Ticket — ${pool.title}`,
+              description: `One entry into the ${pool.title} prize pool`,
+            },
+            unit_amount: Math.round(pool.ticketPrice * 100), // Stripe uses pence
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BASE_URL}/cancel.html`,
+      metadata: {
+        poolId: poolId.toString(),
+        name,
+        email,
+      },
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create checkout session" });
+  }
+});
+
+// GET - Confirm payment and create ticket
+router.get("/confirm", async (req, res) => {
+  try {
+    const { session_id } = req.query;
+
+    // Retrieve the session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    if (session.payment_status !== "paid") {
+      return res.status(400).json({ error: "Payment not completed" });
+    }
+
+    const { poolId, name, email } = session.metadata;
+
+    // Find or create user
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       user = await prisma.user.create({ data: { name, email } });
     }
 
+    // Check if ticket already created for this session (prevent duplicates)
+    const existingTicket = await prisma.ticket.findFirst({
+      where: { stripeSessionId: session_id }
+    });
+
+    if (existingTicket) {
+      return res.json({ message: "Ticket already created", ticket: existingTicket });
+    }
+
     // Create the ticket
     const ticket = await prisma.ticket.create({
-      data: { poolId, userId: user.id }
+      data: {
+        poolId: parseInt(poolId),
+        userId: user.id,
+        stripeSessionId: session_id
+      }
     });
 
     // Update tickets sold
     await prisma.pool.update({
-      where: { id: poolId },
+      where: { id: parseInt(poolId) },
       data: { ticketsSold: { increment: 1 } }
     });
 
     // Send confirmation email
+    const pool = await prisma.pool.findUnique({ where: { id: parseInt(poolId) } });
     await sendEmail(
       email,
       `🎟 Ticket Confirmed — ${pool.title}`,
@@ -118,67 +157,10 @@ router.post("/:id/buy", async (req, res) => {
       `
     );
 
-    res.json({ message: "Ticket purchased successfully!", ticket });
+    res.json({ message: "Ticket created!", ticket });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to purchase ticket" });
-  }
-});
-
-// POST - Pick a winner
-router.post("/:id/winner", async (req, res) => {
-  try {
-    const poolId = parseInt(req.params.id);
-
-    // Get all tickets for this pool
-    const tickets = await prisma.ticket.findMany({
-      where: { poolId },
-      include: { user: true }
-    });
-
-    if (tickets.length === 0) {
-      return res.status(400).json({ error: "No tickets sold for this pool yet!" });
-    }
-
-    // Pick a random winner
-    const winningTicket = tickets[Math.floor(Math.random() * tickets.length)];
-
-    // Mark as winner
-    await prisma.ticket.update({
-      where: { id: winningTicket.id },
-      data: { isWinner: true }
-    });
-
-    // Send winner email
-    await sendEmail(
-      winningTicket.user.email,
-      `🏆 You won — ${winningTicket.user.name}!`,
-      `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #0a0a0f; color: #e8e8f0; padding: 40px; border-radius: 12px;">
-          <h1 style="color: #f5c518; font-size: 2rem; margin-bottom: 8px;">Prize Pool</h1>
-          <p style="color: #7070a0; margin-bottom: 30px;">Winner Announcement</p>
-          <h2 style="color: #f5c518; font-size: 1.6rem;">🏆 Congratulations!</h2>
-          <p style="margin-top: 12px;">Hi <strong>${winningTicket.user.name}</strong>, you've been selected as the winner!</p>
-          <div style="background: #13131a; border: 1px solid #f5c518; border-radius: 8px; padding: 20px; margin: 24px 0;">
-            <p style="margin: 0; font-size: 0.85rem; color: #7070a0;">WINNING TICKET</p>
-            <p style="margin: 4px 0 0; font-size: 1.4rem; color: #f5c518;">#${winningTicket.id}</p>
-          </div>
-          <p style="color: #7070a0; font-size: 0.9rem;">We'll be in touch shortly with your prize details. 🎉</p>
-        </div>
-      `
-    );
-
-    res.json({
-      message: "Winner picked!",
-      winner: {
-        name: winningTicket.user.name,
-        email: winningTicket.user.email,
-        ticketId: winningTicket.id
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to pick winner" });
+    res.status(500).json({ error: "Failed to confirm payment" });
   }
 });
 

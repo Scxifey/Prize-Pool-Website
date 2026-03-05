@@ -16,7 +16,9 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "nodemailer": "^8.0.1"
+    "nodemailer": "^8.0.1",
+    "stripe": "^20.4.0",
+    "striper": "^0.0.1"
   },
   "devDependencies": {
     "prisma": "^4.16.1"

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Cancelled — Prize Pool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c518;
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c27;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #7070a0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 460px;
+      text-align: center;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .icon { font-size: 3.5rem; margin-bottom: 16px; }
+
+    .title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5rem;
+      color: var(--text);
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      background: var(--gold);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: #ffd700;
+      box-shadow: 0 4px 20px rgba(245, 197, 24, 0.3);
+      transform: translateY(-1px);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">❌</div>
+    <div class="title">Payment Cancelled</div>
+    <div class="subtitle">No worries — you haven't been charged. You can try again anytime!</div>
+    <a href="/" class="btn">← Back to Pools</a>
+  </div>
+</body>
+</html>

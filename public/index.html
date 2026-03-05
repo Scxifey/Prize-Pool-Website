@@ -454,18 +454,18 @@
       }
 
       try {
-        const res = await fetch(`/api/pools/${poolId}/buy`, {
+        const res = await fetch(`/api/pools/${poolId}/checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email })
         });
         const data = await res.json();
         if (!res.ok) { showToast(data.error, 'error'); return; }
-        closeModal();
-        showToast('Ticket purchased! Good luck! 🎟', 'success');
-        loadPools();
+
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
       } catch (err) {
-        showToast('Failed to purchase ticket.', 'error');
+        showToast('Failed to start checkout.', 'error');
       }
     }
 

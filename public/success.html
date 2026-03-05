@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful — Prize Pool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c518;
+      --gold-dim: #c9a012;
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c27;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #7070a0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--gold);
+      border-radius: 14px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 460px;
+      text-align: center;
+      animation: fadeUp 0.4s ease;
+      box-shadow: 0 0 40px rgba(245, 197, 24, 0.08);
+    }
+
+    .icon { font-size: 3.5rem; margin-bottom: 16px; }
+
+    .title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+
+    .ticket-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .ticket-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .ticket-id {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      background: var(--gold);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: #ffd700;
+      box-shadow: 0 4px 20px rgba(245, 197, 24, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .loading { color: var(--muted); font-size: 0.9rem; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🎟</div>
+    <div class="title">You're In!</div>
+    <div class="subtitle">Payment successful — your ticket has been confirmed</div>
+
+    <div class="ticket-box">
+      <div class="ticket-label">Your Ticket ID</div>
+      <div class="ticket-id" id="ticketId">
+        <span class="loading">Confirming...</span>
+      </div>
+    </div>
+
+    <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 24px;">
+      A confirmation email has been sent to you. Good luck! 🍀
+    </p>
+
+    <a href="/" class="btn">← Back to Pools</a>
+  </div>
+
+  <script>
+    async function confirmTicket() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+
+      if (!sessionId) {
+        document.getElementById('ticketId').textContent = 'Invalid session';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/pools/confirm?session_id=${sessionId}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('ticketId').textContent = `#${data.ticket.id}`;
+        } else {
+          document.getElementById('ticketId').textContent = data.error;
+        }
+      } catch (err) {
+        document.getElementById('ticketId').textContent = 'Something went wrong';
+      }
+    }
+
+    confirmTicket();
+  </script>
+</body>
+</html>
