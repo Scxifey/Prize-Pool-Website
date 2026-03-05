@@ -26,7 +26,6 @@
       min-height: 100vh;
     }
 
-    /* Header */
     header {
       display: flex;
       align-items: center;
@@ -69,14 +68,12 @@
       color: #e05252;
     }
 
-    /* Main */
     main {
       max-width: 1100px;
       margin: 0 auto;
       padding: 40px 20px;
     }
 
-    /* Stats row */
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -107,7 +104,6 @@
       letter-spacing: 0.05em;
     }
 
-    /* Section title */
     .section-title {
       font-family: 'Bebas Neue', cursive;
       font-size: 1.8rem;
@@ -126,7 +122,6 @@
       background: linear-gradient(90deg, var(--border), transparent);
     }
 
-    /* Create pool form */
     .form-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -214,7 +209,30 @@
       color: var(--gold);
     }
 
-    /* Pools grid */
+    .btn-delete {
+      background: transparent;
+      color: #e05252;
+      border: 1px solid #e05252;
+      width: 100%;
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+      background: rgba(224, 82, 82, 0.1);
+      box-shadow: 0 4px 20px rgba(224, 82, 82, 0.2);
+    }
+
     #poolsGrid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -231,9 +249,7 @@
       transition: border-color 0.2s;
     }
 
-    .pool-card:hover {
-      border-color: var(--gold-dim);
-    }
+    .pool-card:hover { border-color: var(--gold-dim); }
 
     .pool-title {
       font-family: 'Bebas Neue', cursive;
@@ -263,11 +279,7 @@
       margin-bottom: 4px;
     }
 
-    .stat-value {
-      font-size: 1rem;
-      font-weight: 500;
-    }
-
+    .stat-value { font-size: 1rem; font-weight: 500; }
     .stat-value.gold { color: var(--gold); }
 
     .progress-wrap { margin-bottom: 16px; }
@@ -294,7 +306,6 @@
       box-shadow: 0 0 8px rgba(245, 197, 24, 0.4);
     }
 
-    /* Winner banner */
     .winner-banner {
       display: none;
       background: linear-gradient(135deg, #1a1508, #2a2000);
@@ -309,7 +320,6 @@
     .winner-banner h4 { color: var(--gold); font-size: 0.95rem; }
     .winner-banner p { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
 
-    /* Users table */
     .table-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -318,10 +328,7 @@
       margin-bottom: 50px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; }
 
     th {
       background: var(--surface2);
@@ -358,7 +365,6 @@
       color: var(--gold);
     }
 
-    /* Toast */
     #toast {
       position: fixed;
       bottom: 30px;
@@ -388,6 +394,101 @@
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Delete Confirmation Modal */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .confirm-overlay.open { display: flex; }
+
+    .confirm-card {
+      background: var(--surface);
+      border: 1px solid #e05252;
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .confirm-icon {
+      font-size: 2.8rem;
+      margin-bottom: 16px;
+    }
+
+    .confirm-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      letter-spacing: 0.06em;
+      color: #e05252;
+      margin-bottom: 10px;
+    }
+
+    .confirm-message {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .confirm-pool-name {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 28px;
+    }
+
+    .confirm-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-confirm-cancel {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-confirm-cancel:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .btn-confirm-delete {
+      background: #e05252;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-confirm-delete:hover {
+      background: #c94040;
+      box-shadow: 0 4px 20px rgba(224, 82, 82, 0.3);
     }
 
     /* Winner Reveal Modal */
@@ -439,12 +540,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, 
-        var(--bg) 0%, 
-        transparent 30%, 
-        transparent 70%, 
-        var(--bg) 100%
-      );
+      background: linear-gradient(180deg, var(--bg) 0%, transparent 30%, transparent 70%, var(--bg) 100%);
       z-index: 1;
       pointer-events: none;
     }
@@ -540,7 +636,6 @@
 
   <main>
 
-    <!-- Stats Row -->
     <div class="stats-row">
       <div class="stat-card" style="animation-delay:0s">
         <div class="stat-card-label">Total Pools</div>
@@ -556,7 +651,6 @@
       </div>
     </div>
 
-    <!-- Create Pool -->
     <div class="section-title">Create a Pool</div>
     <div class="form-card">
       <div class="form-grid">
@@ -576,11 +670,9 @@
       <button class="btn btn-gold" onclick="createPool()">＋ Create Pool</button>
     </div>
 
-    <!-- Manage Pools -->
     <div class="section-title">Manage Pools</div>
     <div id="poolsGrid"><div class="empty-state">Loading pools...</div></div>
 
-    <!-- Customers -->
     <div class="section-title">Customers</div>
     <div class="table-card">
       <table>
@@ -598,17 +690,29 @@
       </table>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-card">
+        <div class="confirm-icon">🗑</div>
+        <div class="confirm-title">Delete Pool</div>
+        <div class="confirm-message">You are about to permanently delete</div>
+        <div class="confirm-pool-name" id="confirmPoolName"></div>
+        <div class="confirm-message">This will remove all tickets and cannot be undone.</div>
+        <div style="margin-top: 28px;" class="confirm-buttons">
+          <button class="btn-confirm-cancel" onclick="closeConfirm()">Cancel</button>
+          <button class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Winner Reveal Modal -->
     <div class="reveal-overlay" id="revealOverlay">
       <div class="reveal-card">
         <div class="reveal-title">🎰 Picking Winner</div>
-        
         <div class="number-display">
           <div class="number-rolling" id="rollingNumber">000</div>
         </div>
-        
         <div class="spinning-label" id="spinningLabel">Drawing ticket...</div>
-
         <div class="winner-reveal" id="winnerReveal">
           <div style="font-size: 2.5rem; margin-bottom: 12px;">🏆</div>
           <div class="winner-reveal-name" id="revealName"></div>
@@ -623,16 +727,17 @@
   <div id="toast"></div>
 
   <script>
-    // Check admin is logged in
+    let poolToDelete = null;
+    let btnToDelete = null;
+
     async function checkAuth() {
       const res = await fetch('/api/admin/check');
       const data = await res.json();
       if (!data.isAdmin) {
-        window.location.href = '/admin/login.html';
+        window.location.href = '/m8x92kp/login.html';
       }
     }
 
-    // Load stats
     async function loadStats(pools, users) {
       const totalTickets = pools.reduce((sum, p) => sum + p.ticketsSold, 0);
       document.getElementById('statPools').textContent = pools.length;
@@ -640,7 +745,6 @@
       document.getElementById('statCustomers').textContent = users.length;
     }
 
-    // Load pools
     async function loadPools() {
       const res = await fetch('/api/pools');
       const data = await res.json();
@@ -679,6 +783,7 @@
             </div>
           </div>
           <button class="btn btn-outline" onclick="pickWinner(${pool.id}, this)">🏆 Pick Winner</button>
+          <button class="btn-delete" onclick="openConfirm(${pool.id}, '${pool.title.replace(/'/g, "\\'")}', this)">🗑 Delete Pool</button>
           <div class="winner-banner" id="winner-${pool.id}">
             <h4 id="winner-name-${pool.id}"></h4>
             <p id="winner-email-${pool.id}"></p>
@@ -690,7 +795,6 @@
       return data.pools;
     }
 
-    // Load users
     async function loadUsers() {
       const res = await fetch('/api/admin/users');
       const data = await res.json();
@@ -717,7 +821,6 @@
       return data.users;
     }
 
-    // Create pool
     async function createPool() {
       const title = document.getElementById('newTitle').value.trim();
       const ticketPrice = parseFloat(document.getElementById('newPrice').value);
@@ -746,7 +849,6 @@
       }
     }
 
-// Pick winner with animated reveal
     async function pickWinner(poolId, btn) {
       btn.disabled = true;
       btn.textContent = 'Picking...';
@@ -767,7 +869,6 @@
           return;
         }
 
-        // Start the reveal animation
         startReveal(data.winner);
 
       } catch (err) {
@@ -777,7 +878,50 @@
       }
     }
 
-    // Animated reveal
+    // Open custom delete confirmation
+    function openConfirm(poolId, poolTitle, btn) {
+      poolToDelete = poolId;
+      btnToDelete = btn;
+      document.getElementById('confirmPoolName').textContent = `"${poolTitle}"`;
+      document.getElementById('confirmOverlay').classList.add('open');
+    }
+
+    function closeConfirm() {
+      document.getElementById('confirmOverlay').classList.remove('open');
+      poolToDelete = null;
+      btnToDelete = null;
+    }
+
+    async function confirmDelete() {
+      if (!poolToDelete) return;
+
+      const btn = document.getElementById('confirmDeleteBtn');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+
+      try {
+        const res = await fetch(`/api/admin/pools/${poolToDelete}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          closeConfirm();
+          showToast('Pool deleted!', 'success');
+          loadAll();
+        } else {
+          showToast(data.error, 'error');
+        }
+      } catch (err) {
+        showToast('Failed to delete pool.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🗑 Delete';
+    }
+
     function startReveal(winner) {
       const overlay = document.getElementById('revealOverlay');
       const rollingNumber = document.getElementById('rollingNumber');
@@ -786,28 +930,23 @@
       const revealName = document.getElementById('revealName');
       const revealEmail = document.getElementById('revealEmail');
 
-      // Reset
       winnerReveal.classList.remove('show');
       rollingNumber.classList.remove('winner');
       rollingNumber.style.display = 'block';
       spinningLabel.style.display = 'block';
       spinningLabel.textContent = 'Drawing ticket...';
 
-      // Open overlay
       overlay.classList.add('open');
 
-      // Rolling animation
       let speed = 50;
       let duration = 0;
       const totalDuration = 4000;
       let interval;
 
       function roll() {
-        // Generate random ticket number to display
         const randomNum = Math.floor(Math.random() * 999) + 1;
         rollingNumber.textContent = String(randomNum).padStart(3, '0');
 
-        // Gradually slow down
         duration += speed;
         if (duration < totalDuration * 0.6) {
           speed = 50;
@@ -821,13 +960,10 @@
 
         if (duration >= totalDuration) {
           clearInterval(interval);
-
-          // Show winning ticket ID
           rollingNumber.textContent = String(winner.ticketId).padStart(3, '0');
           rollingNumber.classList.add('winner');
           spinningLabel.textContent = '🎉 Winning Ticket!';
 
-          // Show winner details after a pause
           setTimeout(() => {
             rollingNumber.style.display = 'none';
             spinningLabel.style.display = 'none';
@@ -846,7 +982,6 @@
       interval = setTimeout(roll, speed);
     }
 
-    // Confetti effect
     function launchConfetti() {
       const colors = ['#f5c518', '#ffd700', '#fff', '#c9a012', '#ff6b6b', '#4ecdc4'];
       for (let i = 0; i < 80; i++) {
@@ -865,19 +1000,16 @@
       }
     }
 
-    // Close reveal
     function closeReveal() {
       document.getElementById('revealOverlay').classList.remove('open');
       loadAll();
     }
 
-    // Logout
     async function logout() {
       await fetch('/api/admin/logout', { method: 'POST' });
-      window.location.href = '/admin/login.html';
+      window.location.href = '/m8x92kp/login.html';
     }
 
-    // Toast
     function showToast(msg, type = 'success') {
       const toast = document.getElementById('toast');
       toast.textContent = msg;
@@ -885,7 +1017,6 @@
       setTimeout(() => { toast.className = ''; }, 3500);
     }
 
-    // Load everything
     async function loadAll() {
       const [pools, users] = await Promise.all([loadPools(), loadUsers()]);
       loadStats(pools, users);
@@ -896,8 +1027,3 @@
   </script>
 </body>
 </html>
-```
-
-Save the file then **restart your server** (`Ctrl + C` then `node src/index.js`) and visit:
-```
-http://localhost:3000/admin/login.html

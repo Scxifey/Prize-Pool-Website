@@ -200,4 +200,26 @@ router.post("/pools/:id/winner", isAdmin, async (req, res) => {
   }
 });
 
+// DELETE - Delete a pool (protected)
+router.delete("/pools/:id", isAdmin, async (req, res) => {
+  try {
+    const poolId = parseInt(req.params.id);
+
+    // Delete all tickets for this pool first
+    await prisma.ticket.deleteMany({
+      where: { poolId }
+    });
+
+    // Then delete the pool
+    await prisma.pool.delete({
+      where: { id: poolId }
+    });
+
+    res.json({ message: "Pool deleted!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete pool" });
+  }
+});
+
 module.exports = router;
