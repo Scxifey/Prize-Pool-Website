@@ -373,7 +373,7 @@
       results.style.display = 'none';
 
       try {
-        const res = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
+        const res = await fetch(`/api/pools/tickets?email=${encodeURIComponent(email)}`);
         const data = await res.json();
 
         btn.disabled = false;
