@@ -51,6 +51,33 @@
       margin-left: 12px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-customers {
+      background: rgba(245, 197, 24, 0.08);
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-customers:hover {
+      background: rgba(245, 197, 24, 0.15);
+      box-shadow: 0 4px 16px rgba(245, 197, 24, 0.15);
+    }
+
     .btn-logout {
       background: transparent;
       border: 1px solid var(--border);
@@ -87,7 +114,12 @@
       border-radius: 12px;
       padding: 24px;
       animation: fadeUp 0.4s ease both;
+      cursor: default;
+      transition: border-color 0.2s;
     }
+
+    .stat-card.clickable { cursor: pointer; }
+    .stat-card.clickable:hover { border-color: var(--gold-dim); }
 
     .stat-card-label {
       font-size: 0.75rem;
@@ -102,6 +134,12 @@
       font-size: 2.4rem;
       color: var(--gold);
       letter-spacing: 0.05em;
+    }
+
+    .stat-card-hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
     }
 
     .section-title {
@@ -306,65 +344,6 @@
       box-shadow: 0 0 8px rgba(245, 197, 24, 0.4);
     }
 
-    .winner-banner {
-      display: none;
-      background: linear-gradient(135deg, #1a1508, #2a2000);
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 14px;
-      text-align: center;
-      margin-top: 12px;
-    }
-
-    .winner-banner.show { display: block; }
-    .winner-banner h4 { color: var(--gold); font-size: 0.95rem; }
-    .winner-banner p { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
-
-    .table-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 50px;
-    }
-
-    table { width: 100%; border-collapse: collapse; }
-
-    th {
-      background: var(--surface2);
-      padding: 14px 20px;
-      text-align: left;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    td {
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
-
-    tr:hover td { background: var(--surface2); }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 0.75rem;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .badge.gold {
-      background: rgba(245, 197, 24, 0.1);
-      border-color: var(--gold-dim);
-      color: var(--gold);
-    }
-
     #toast {
       position: fixed;
       bottom: 30px;
@@ -396,7 +375,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Delete Confirmation Modal */
     .confirm-overlay {
       display: none;
       position: fixed;
@@ -422,10 +400,7 @@
       animation: fadeUp 0.3s ease;
     }
 
-    .confirm-icon {
-      font-size: 2.8rem;
-      margin-bottom: 16px;
-    }
+    .confirm-icon { font-size: 2.8rem; margin-bottom: 16px; }
 
     .confirm-title {
       font-family: 'Bebas Neue', cursive;
@@ -491,7 +466,6 @@
       box-shadow: 0 4px 20px rgba(224, 82, 82, 0.3);
     }
 
-    /* Winner Reveal Modal */
     .reveal-overlay {
       display: none;
       position: fixed;
@@ -523,7 +497,6 @@
       letter-spacing: 0.2em;
       color: var(--muted);
       margin-bottom: 32px;
-      text-transform: uppercase;
     }
 
     .number-display {
@@ -551,7 +524,6 @@
       color: var(--gold);
       letter-spacing: 0.1em;
       text-shadow: 0 0 40px rgba(245, 197, 24, 0.6);
-      transition: all 0.1s;
       line-height: 1;
     }
 
@@ -565,11 +537,7 @@
       to { text-shadow: 0 0 60px rgba(245, 197, 24, 0.9), 0 0 100px rgba(245, 197, 24, 0.4); transform: scale(1.05); }
     }
 
-    .winner-reveal {
-      display: none;
-      animation: fadeUp 0.5s ease;
-    }
-
+    .winner-reveal { display: none; animation: fadeUp 0.5s ease; }
     .winner-reveal.show { display: block; }
 
     .winner-reveal-name {
@@ -588,8 +556,6 @@
 
     .confetti {
       position: fixed;
-      width: 10px;
-      height: 10px;
       border-radius: 2px;
       animation: confettiFall linear forwards;
       z-index: 201;
@@ -631,7 +597,10 @@
 
   <header>
     <div class="logo">Prize Pool <span>Admin Dashboard</span></div>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+    <div class="header-actions">
+      <a href="/m8x92kp/customers.html" class="btn-customers">👥 Customers</a>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
   </header>
 
   <main>
@@ -645,9 +614,10 @@
         <div class="stat-card-label">Total Tickets Sold</div>
         <div class="stat-card-value" id="statTickets">—</div>
       </div>
-      <div class="stat-card" style="animation-delay:0.2s">
+      <div class="stat-card clickable" style="animation-delay:0.2s" onclick="window.location.href='/m8x92kp/customers.html'">
         <div class="stat-card-label">Total Customers</div>
         <div class="stat-card-value" id="statCustomers">—</div>
+        <div class="stat-card-hint">Click to view →</div>
       </div>
     </div>
 
@@ -673,56 +643,39 @@
     <div class="section-title">Manage Pools</div>
     <div id="poolsGrid"><div class="empty-state">Loading pools...</div></div>
 
-    <div class="section-title">Customers</div>
-    <div class="table-card">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Tickets</th>
-            <th>Pools Entered</th>
-          </tr>
-        </thead>
-        <tbody id="usersTable">
-          <tr><td colspan="4" class="empty-state">Loading customers...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="confirm-overlay" id="confirmOverlay">
-      <div class="confirm-card">
-        <div class="confirm-icon">🗑</div>
-        <div class="confirm-title">Delete Pool</div>
-        <div class="confirm-message">You are about to permanently delete</div>
-        <div class="confirm-pool-name" id="confirmPoolName"></div>
-        <div class="confirm-message">This will remove all tickets and cannot be undone.</div>
-        <div style="margin-top: 28px;" class="confirm-buttons">
-          <button class="btn-confirm-cancel" onclick="closeConfirm()">Cancel</button>
-          <button class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">🗑 Delete</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Winner Reveal Modal -->
-    <div class="reveal-overlay" id="revealOverlay">
-      <div class="reveal-card">
-        <div class="reveal-title">🎰 Picking Winner</div>
-        <div class="number-display">
-          <div class="number-rolling" id="rollingNumber">000</div>
-        </div>
-        <div class="spinning-label" id="spinningLabel">Drawing ticket...</div>
-        <div class="winner-reveal" id="winnerReveal">
-          <div style="font-size: 2.5rem; margin-bottom: 12px;">🏆</div>
-          <div class="winner-reveal-name" id="revealName"></div>
-          <div class="winner-reveal-email" id="revealEmail"></div>
-          <button class="btn-close-reveal" onclick="closeReveal()">Done</button>
-        </div>
-      </div>
-    </div>
-
   </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-card">
+      <div class="confirm-icon">🗑</div>
+      <div class="confirm-title">Delete Pool</div>
+      <div class="confirm-message">You are about to permanently delete</div>
+      <div class="confirm-pool-name" id="confirmPoolName"></div>
+      <div class="confirm-message">This will remove all tickets and cannot be undone.</div>
+      <div style="margin-top: 28px;" class="confirm-buttons">
+        <button class="btn-confirm-cancel" onclick="closeConfirm()">Cancel</button>
+        <button class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">🗑 Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winner Reveal Modal -->
+  <div class="reveal-overlay" id="revealOverlay">
+    <div class="reveal-card">
+      <div class="reveal-title">🎰 Picking Winner</div>
+      <div class="number-display">
+        <div class="number-rolling" id="rollingNumber">000</div>
+      </div>
+      <div class="spinning-label" id="spinningLabel">Drawing ticket...</div>
+      <div class="winner-reveal" id="winnerReveal">
+        <div style="font-size: 2.5rem; margin-bottom: 12px;">🏆</div>
+        <div class="winner-reveal-name" id="revealName"></div>
+        <div class="winner-reveal-email" id="revealEmail"></div>
+        <button class="btn-close-reveal" onclick="closeReveal()">Done</button>
+      </div>
+    </div>
+  </div>
 
   <div id="toast"></div>
 
@@ -733,9 +686,7 @@
     async function checkAuth() {
       const res = await fetch('/api/admin/check');
       const data = await res.json();
-      if (!data.isAdmin) {
-        window.location.href = '/m8x92kp/login.html';
-      }
+      if (!data.isAdmin) window.location.href = '/m8x92kp/login.html';
     }
 
     async function loadStats(pools, users) {
@@ -784,10 +735,6 @@
           </div>
           <button class="btn btn-outline" onclick="pickWinner(${pool.id}, this)">🏆 Pick Winner</button>
           <button class="btn-delete" onclick="openConfirm(${pool.id}, '${pool.title.replace(/'/g, "\\'")}', this)">🗑 Delete Pool</button>
-          <div class="winner-banner" id="winner-${pool.id}">
-            <h4 id="winner-name-${pool.id}"></h4>
-            <p id="winner-email-${pool.id}"></p>
-          </div>
         `;
         grid.appendChild(card);
       });
@@ -798,26 +745,6 @@
     async function loadUsers() {
       const res = await fetch('/api/admin/users');
       const data = await res.json();
-      const tbody = document.getElementById('usersTable');
-
-      if (data.users.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No customers yet</td></tr>';
-        return data.users;
-      }
-
-      tbody.innerHTML = '';
-      data.users.forEach(user => {
-        const pools = [...new Set(user.tickets.map(t => t.pool.title))];
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${user.name}</td>
-          <td style="color: var(--muted)">${user.email}</td>
-          <td><span class="badge gold">${user.tickets.length}</span></td>
-          <td>${pools.map(p => `<span class="badge">${p}</span>`).join(' ')}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
       return data.users;
     }
 
@@ -870,7 +797,6 @@
         }
 
         startReveal(data.winner);
-
       } catch (err) {
         showToast('Failed to pick winner.', 'error');
         btn.disabled = false;
@@ -878,7 +804,6 @@
       }
     }
 
-    // Open custom delete confirmation
     function openConfirm(poolId, poolTitle, btn) {
       poolToDelete = poolId;
       btnToDelete = btn;
@@ -935,7 +860,6 @@
       rollingNumber.style.display = 'block';
       spinningLabel.style.display = 'block';
       spinningLabel.textContent = 'Drawing ticket...';
-
       overlay.classList.add('open');
 
       let speed = 50;
@@ -944,19 +868,13 @@
       let interval;
 
       function roll() {
-        const randomNum = Math.floor(Math.random() * 999) + 1;
-        rollingNumber.textContent = String(randomNum).padStart(3, '0');
-
+        rollingNumber.textContent = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
         duration += speed;
-        if (duration < totalDuration * 0.6) {
-          speed = 50;
-        } else if (duration < totalDuration * 0.8) {
-          speed = 120;
-        } else if (duration < totalDuration * 0.95) {
-          speed = 250;
-        } else {
-          speed = 400;
-        }
+
+        if (duration < totalDuration * 0.6) speed = 50;
+        else if (duration < totalDuration * 0.8) speed = 120;
+        else if (duration < totalDuration * 0.95) speed = 250;
+        else speed = 400;
 
         if (duration >= totalDuration) {
           clearInterval(interval);
@@ -972,7 +890,6 @@
             winnerReveal.classList.add('show');
             launchConfetti();
           }, 1500);
-
           return;
         }
 
@@ -986,16 +903,16 @@
       const colors = ['#f5c518', '#ffd700', '#fff', '#c9a012', '#ff6b6b', '#4ecdc4'];
       for (let i = 0; i < 80; i++) {
         setTimeout(() => {
-          const confetti = document.createElement('div');
-          confetti.className = 'confetti';
-          confetti.style.left = `${Math.random() * 100}vw`;
-          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-          confetti.style.width = `${Math.random() * 10 + 6}px`;
-          confetti.style.height = `${Math.random() * 10 + 6}px`;
-          confetti.style.animationDuration = `${Math.random() * 2 + 2}s`;
-          confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-          document.body.appendChild(confetti);
-          setTimeout(() => confetti.remove(), 4000);
+          const c = document.createElement('div');
+          c.className = 'confetti';
+          c.style.left = `${Math.random() * 100}vw`;
+          c.style.background = colors[Math.floor(Math.random() * colors.length)];
+          c.style.width = `${Math.random() * 10 + 6}px`;
+          c.style.height = `${Math.random() * 10 + 6}px`;
+          c.style.animationDuration = `${Math.random() * 2 + 2}s`;
+          c.style.animationDelay = `${Math.random() * 0.5}s`;
+          document.body.appendChild(c);
+          setTimeout(() => c.remove(), 4000);
         }, i * 30);
       }
     }
