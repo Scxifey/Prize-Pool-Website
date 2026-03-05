@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms & Conditions — Prize Pool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f5c518;
+      --gold-dim: #c9a012;
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c27;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #7070a0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #1a1508 0%, transparent 100%);
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-back:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .last-updated {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 48px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-heading {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 12px;
+    }
+
+    ul li {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gold-dim);
+    }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 16px 20px; }
+      main { padding: 40px 20px; }
+      footer { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">Prize Pool</a>
+    <a href="/" class="btn-back">← Back to Pools</a>
+  </header>
+
+  <main>
+    <div class="page-title">Terms & Conditions</div>
+    <div class="last-updated">Last updated: March 2025</div>
+
+    <div class="section">
+      <div class="section-heading">1. Overview</div>
+      <p>By purchasing a ticket on Prize Pool ("we", "us", "our"), you agree to be bound by these Terms and Conditions. Please read them carefully before making any purchase.</p>
+      <p>Prize Pool operates prize competitions in which participants purchase tickets for the chance to win a specified prize. This is a paid-entry competition and not a lottery or gambling service.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">2. Eligibility</div>
+      <ul>
+        <li>You must be 18 years of age or older to participate.</li>
+        <li>You must be a resident of the United Kingdom.</li>
+        <li>Employees, partners, or associates of Prize Pool are not eligible to enter.</li>
+        <li>By purchasing a ticket you confirm that you meet all eligibility requirements.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">3. Ticket Purchases</div>
+      <p>Each ticket purchased grants one entry into the specified prize pool. You may purchase up to 10 tickets per transaction. Multiple tickets increase your chances of winning as each ticket is treated as a separate entry.</p>
+      <p>Upon successful payment you will receive a confirmation email containing your unique ticket ID(s). This email serves as your proof of entry and should be retained.</p>
+      <div class="highlight-box">
+        ⚠️ All ticket purchases are final and non-refundable once payment has been processed. By completing your purchase you acknowledge and accept this.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">4. The Draw</div>
+      <ul>
+        <li>The draw takes place once all available tickets in a pool have been sold.</li>
+        <li>One winner is selected at random from all valid ticket holders.</li>
+        <li>Every ticket has an equal and independent chance of being selected.</li>
+        <li>The draw is conducted electronically and the result is final.</li>
+        <li>All participants will be notified of the result by email.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">5. Prizes</div>
+      <p>The prize for each pool is clearly stated on the pool listing. Prizes are non-transferable and cannot be exchanged for cash unless otherwise stated.</p>
+      <p>Winners will be contacted via the email address provided at the time of purchase. If a winner cannot be contacted or does not respond within 14 days of notification, we reserve the right to redraw and select a new winner.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">6. Payments</div>
+      <p>All payments are processed securely by Stripe. We do not store your card details at any point. By making a purchase you agree to Stripe's terms of service.</p>
+      <p>All prices are displayed in British Pounds (£) and are inclusive of any applicable taxes.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">7. Privacy</div>
+      <p>We collect your name and email address solely for the purpose of processing your entry and contacting you regarding the draw outcome. We do not sell or share your personal data with third parties.</p>
+      <p>By entering you consent to us contacting you by email regarding your entry and future prize pools. You may opt out at any time.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">8. Limitation of Liability</div>
+      <p>Prize Pool shall not be liable for any loss or damage arising from participation in our competitions beyond the value of the ticket purchased. We reserve the right to cancel or amend any pool in exceptional circumstances.</p>
+      <p>In the event a pool is cancelled all ticket holders will be refunded in full.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">9. Changes to These Terms</div>
+      <p>We reserve the right to update these Terms and Conditions at any time. Changes will be posted on this page with an updated date. Continued use of the site after changes constitutes acceptance of the new terms.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">10. Contact</div>
+      <p>If you have any questions about these terms or about a specific competition, please contact us at <a href="mailto:support@rbspools.com">support@rbspools.com</a>.</p>
+    </div>
+
+  </main>
+
+  <footer>
+    © 2025 Prize Pool · <a href="/terms.html">Terms & Conditions</a> · Payments secured by Stripe
+  </footer>
+
+</body>
+</html>
